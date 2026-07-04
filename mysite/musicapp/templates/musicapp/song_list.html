@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>歌单列表</title>
+</head>
+<body>
+    <h1>歌单列表</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>歌曲名</th>
+                <th>歌手名</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in page_obj.object_list %}
+            <tr>
+                <td>{{ song.name }}</td>
+                <td>{{ song.artist_name }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">暂无数据</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?page={{page_obj.previous_page_number}}">上一页</a>
+        {% else %}
+            <span>上一页</span>
+        {% endif %}    
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number%}
+                <span>{{num}}</span>
+            {% else%}
+                <a href="?page={{num}}">{{num}}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{page_obj.next_page_number}}">下一页</a>
+        {% else %}
+            <span>下一页</span>
+        {% endif %}   
+
+        <span>
+            跳转到
+            <input type="number" id="page-input" min="1" max="{{page_obj.paginator.num_pages}}" placeholder="页码">
+            <button onclick="goToPage()">跳转</button>
+        </span>
+    </div>
+
+    <script>
+        function goToPage(){
+            var input= document.getElementById('page-input');
+            var page= input.value.trim();
+            if(page){
+                window.location.href='?page=' + page;
+            }
+        }
+        document.getElementById('page-input').addEventListener('keypress',function(e){
+            if(e.key == 'Enter'){
+                goToPage();
+            }
+        });
+    </script>
+    <p></p>
+</body>
+</html>
