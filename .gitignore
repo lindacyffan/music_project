@@ -29,3 +29,6 @@ Thumbs.db
 # 其他
 *.tmp
 *.temp
+
+# Django 本地配置
+db.sqlite3
