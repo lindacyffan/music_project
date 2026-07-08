@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<form action="/search/" method="get">
+    <input type="text" name="q" placeholder="输入关键词" required>
+    <select name="type">
+        <option value="song">歌曲</option>
+        <option value="artist">歌手</option>
+    </select>
+    <button type="submit">搜索</button>
+</form>
+<head>
+    <meta charset="UTF-8">
+    <title>歌曲详情</title>
+</head>
+<body>
+     <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a> | <a href="/playlists">歌单列表</a>
+    <h1>歌曲详情</h1>
+    <div style="display: flex; align-items: flex-start;">
+        <div>
+            {%if song.album_picUrl %}
+                <img src="{{song.album_picUrl}}" width="150">
+            {% else %}
+                <img src="/static/default_cover.jpg">
+            {% endif %}
+        </div>
+        <div style="margin-left: 20px;">
+            <h1>{{song.name}}</h1>
+            <p>歌手：{{song.artist_name}}</p>
+            <a href="{{song.music_Url}}">查看原始网站</a>
+        </div>
+    </div>
+    <h1>歌词</h1>
+    {% if song.lyrics %}
+        <pre>{{song.lyrics}}</pre>
+    {% else %}
+        <p>纯音乐</p>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>评论内容</th>
+                <th>评论时间</th>
+                <th>喜欢人数</th>
+            </tr>
+        </thead>
+        <tbody>
+                {%for comment in comments|dictsortreversed:"时间"%}
+                <tr>
+                    <td>{{comment.内容}}</td>
+                    <td>{{comment.时间}}</td>
+                    <td>{{comment.likes}}</td>
+                    <td><a href="/song/{{song.id}}/comment/delete/{{comment.id}}/">删除</a></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3">暂无数据</td>
+                </tr>
+                {% endfor %}
+        </tbody>
+    </table>
+    <p>新建评论</p>
+    <form action="/song/{{song.id}}/comment/" method="post">
+        {% csrf_token %}
+        <input type="text" name="comment_text" placeholder="请输入评论"required>
+        <button type="submit">提交</button>
+    </form>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv('data/artist.csv',encoding='utf-8-sig')
+df = pd.read_csv('data/artists.csv',encoding='utf-8-sig')
 
 unique = df.drop_duplicates(subset=['artist_id'], keep = 'first')
 

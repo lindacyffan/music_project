@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>歌单列表</title>
+</head>
+<body>
+    <form action="/search/" method="get">
+    <input type="text" name="q" placeholder="输入关键词" required>
+    <select name="type">
+        <option value="song">歌曲</option>
+        <option value="artist">歌手</option>
+    </select>
+    <button type="submit">搜索</button>
+    </form>
+    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a>| <a href="/playlists">歌单列表</a>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>歌单主题名称</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for source in playlist.keys %}
+            <tr>
+                <td><a href="/playlists/{{source}}/">{{ source }}</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="1">暂无数据</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    
+
+ 
+</body>
+</html>

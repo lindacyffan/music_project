@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>搜索结果</title>
+</head>
+<body>
+<form action="/search/" method="get">
+    <input type="text" name="q" id="search-input" placeholder="输入关键词" required>
+    <select name="type">
+        <option value="song">歌曲</option>
+        <option value="artist">歌手</option>
+    </select>
+    <button type="submit">搜索</button>
+</form>
+
+<div id="search-results"></div>
+    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a>| <a href="/playlists">歌单列表</a>
+    <title>搜索结果</title>
+    <p>共搜到{{count}}个结果，总计耗时{{elapsed}}毫秒</p>
+    {% if search_type == 'song'%}
+        {% for item in page_obj.object_list %}
+            <div>
+                <a href="/song/{{item.id}}">{{item.name}}</a>
+                {% if item.album_picUrl%}
+                <img src="{{item.album_picUrl}}" width="150">
+                {% else %}
+                <img src="/static/default_avatar.jpg" width="150">
+                {% endif %}
+            </div>
+        {% empty %}
+         <p>没有找到歌曲</p>
+        {% endfor %}
+    {% else %}
+        {% for item in page_obj.object_list %}
+        <a href="/artists/{{item.artist_id}}">{{item.artist_name}}</a>
+        {% if item.artist_pic %}
+            <img src="{{item.artist_pic}}" width="150">
+        {% else %}
+            <img src="/static/default_avatar.jpg" width="150">
+        {% endif %}
+        {% empty %}
+         <p>没有找到歌手</p>
+        {% endfor %}
+    {% endif %}
+<div>
+        {% if page_obj.has_previous %}
+            <a href="?q={{keyword}}&type={{search_type}}&page={{page_obj.previous_page_number}}">上一页</a>
+        {% else %}
+            <span>上一页</span>
+        {% endif %}    
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number%}
+                <span>{{num}}</span>
+            {% else%}
+                <a href="?q={{keyword}}&type={{search_type}}&page={{num}}">{{num}}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?q={{keyword}}&type={{search_type}}&page={{page_obj.next_page_number}}">下一页</a>
+        {% else %}
+            <span>下一页</span>
+        {% endif %}   
+
+        <span>
+            跳转到
+            <input type="number" id="page-input" min="1" max="{{page_obj.paginator.num_pages}}" placeholder="页码">
+            <button onclick="goToPage()">跳转</button>
+        </span>
+    </div>
+    <script>
+        function goToPage(){
+            var input= document.getElementById('page-input');
+            var page= input.value.trim();
+            if(page){
+                window.location.href='?q={{keyword}}&type={{search_type}}&page=' + page;
+            }
+        }
+        document.getElementById('page-input').addEventListener('keypress',function(e){
+            if(e.key == 'Enter'){
+                goToPage();
+            }
+        });
+    </script>
+
+
+</body>
+</html>

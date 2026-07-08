@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>歌手详情</title>
+</head>
+<body>
+    <form action="/search/" method="get">
+    <input type="text" name="q" placeholder="输入关键词" required>
+    <select name="type">
+        <option value="song">歌曲</option>
+        <option value="artist">歌手</option>
+    </select>
+    <button type="submit">搜索</button>
+    </form> 
+    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a> | <a href="/playlists">歌单列表</a>
+    <h1>歌手详情</h1>
+    <div style="display: flex; align-items: flex-start;">
+        <div>
+            {%if artist.artist_pic %}
+                <img src="{{artist.artist_pic}}" width="150">
+            {% else %}
+                <img src="/static/default_cover.jpg">
+            {% endif %}
+        </div>
+        <div style="margin-left: 20px;">
+            <h1>{{artist.name}}</h1>
+            <p>歌手：{{artist.artist_name}}</p>
+            <a href="{{artist.artist_url}}">查看原始网站</a>
+        </div>
+    </div>
+    <h2>简介</h2>
+    {% if artist.artist_intro %}
+        <pre>{{artist.artist_intro}}</pre>
+    {% else %}
+        <p>歌手暂无简介</p>
+    {% endif %}
+    <h2>{{artist.artist_name}}的歌曲</h2>
+    <ul>
+        {% for song in songs %}
+            <li><a href="/song/{{song.id}}">{{song.name}}</a></li>
+        {% empty %}
+            <li>该歌手暂无歌曲</li>
+        {% endfor %}
+    </ul>
+    
+</body>
+</html>
