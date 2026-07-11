@@ -8,3 +8,5 @@ unique.to_csv('data/artists_unique.csv', index=False, encoding = 'utf-8-sig')
 
 print(f"去重前：{len(df)} 行")
 print(f"去重后：{len(unique)} 行")
+
+# 歌单中匹配的歌手可能存在重复的，需要删除

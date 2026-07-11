@@ -1,41 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>歌单列表</title>
-</head>
-<body>
-    <form action="/search/" method="get">
-    <input type="text" name="q" placeholder="输入关键词" required>
-    <select name="type">
-        <option value="song">歌曲</option>
-        <option value="artist">歌手</option>
-    </select>
-    <button type="submit">搜索</button>
-    </form>
-    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a>| <a href="/playlists">歌单列表</a>
+{% extends "musicapp/base.html" %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>歌单主题名称</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for source in playlist.keys %}
-            <tr>
-                <td><a href="/playlists/{{source}}/">{{ source }}</a></td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="1">暂无数据</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    
+{% block title %}歌单列表{% endblock %}
 
- 
-</body>
-</html>
+{% block content %}
+<h1>歌单列表</h1>
+
+<div class="playlist-grid">
+    {% for source, songs in playlist.items %}
+        <a href="/playlists/{{ source }}/" class="playlist-card">
+            {{ source }}
+            <span style="display: block;font-size: 12px; color: #999; font-weight: normal;">
+                {{ songs |length }}首歌
+            </span>
+        </a>    
+    {% endfor %}
+</div>
+{% endblock %}

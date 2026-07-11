@@ -18,9 +18,12 @@ music_env/
 
 # 数据文件（不提交）
 data/*.csv
+data/*.png
 data/*.json
 data/*.db
+analysis/*.png
 *.log
+image*.png
 
 # 操作系统文件
 .DS_Store
@@ -28,9 +31,14 @@ Thumbs.db
 
 # 其他
 *.tmp
+
 *.temp
 
 # Django 本地配置
 db.sqlite3
 
-comments.json
+# 图片文件
+*.png
+*.jpg
+*.jpeg
+*.gif

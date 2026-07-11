@@ -8,14 +8,41 @@ import pandas as pd
 import time
 import json
 import os
-df = pd.read_csv("C:/Users/53125/Desktop/music_project/data/lyrics_data_all.csv",encoding='utf-8-sig')
+import jieba
+from collections import defaultdict
 
+inverted_index = defaultdict(set)
+artist_inverted_index = defaultdict(set) # 键不存在的时候可以自动创建
+songs = []
+artists = []
+
+df = pd.read_csv("C:/Users/53125/Desktop/music_project/data/lyrics_data_all.csv",encoding='utf-8-sig')
 songs = df.to_dict('records')
+
+def build_inverted_index():
+    global inverted_index
+    inverted_index.clear()
+    for song in songs:
+        text = f"{song['name']} {song['artist_name']} {song.get('lyrics', '')}"
+        words = jieba.lcut(text)
+        for word in set(words):
+            if len(word) >= 1:
+                inverted_index[word].add(song['id'])
+build_inverted_index()
+
+
+
 def song_list(request):
-    paginator = Paginator(songs, 20)
+    paginator = Paginator(songs, 15)
     page_number = request.GET.get('page',1) # request.GET 相当于一个字典，里面存了URL？后面的键值对
     page_obj = paginator.get_page(page_number)
-    return render(request, 'musicapp/song_list.html',{'page_obj':page_obj})# 请求页，模板，以及传给模板的数据
+    current = page_obj.number
+    total = page_obj.paginator.num_pages
+    start = max(current - 3, 1)
+    end = min(current + 3, total)
+    page_range = range(start, end + 1)
+    return render(request, 'musicapp/song_list.html',{'page_obj':page_obj,'page_range':page_range})# 请求页，模板，以及传给模板的数据
+
 def song_detail(request,song_id):
     song_at_id = None
     for song in songs:
@@ -24,26 +51,42 @@ def song_detail(request,song_id):
             break
     data = load_comments()
     return render(request, 'musicapp/song_detail.html',{'song':song_at_id,'comments':data.get(str(song_id),[])})
-df2 = pd.read_csv("C:/Users/53125/Desktop/music_project/data/artists_unique.csv",encoding='utf-8-sig')
 
+df2 = pd.read_csv("C:/Users/53125/Desktop/music_project/data/artists_unique_clean.csv",encoding='utf-8-sig')
 artists = df2.to_dict('records')
+def build_artist_inverted_index():
+    global artist_inverted_index
+    artist_inverted_index.clear()
+    for artist in artists:
+        text = f"{artist['artist_name']} {artist.get('artist_intro', '')}"
+        words = jieba.lcut(text)
+        for word in set(words):
+            if len(word) >= 1:
+                artist_inverted_index[word].add(artist['artist_id'])
+build_artist_inverted_index()
+
 def artist_list(request):
     
-    paginator = Paginator(artists, 20)
+    paginator = Paginator(artists, 15)
     page_number = request.GET.get('page',1) # request.GET 相当于一个字典，里面存了URL？后面的键值对
     page_obj = paginator.get_page(page_number)
-    return render(request, 'musicapp/artist_list.html',{'page_obj':page_obj})# 请求页，模板，以及传给模板的数据
+    current = page_obj.number
+    total = page_obj.paginator.num_pages
+    start = max(current - 3, 1)
+    end = min(current + 3, total)
+    page_range = range(start, end + 1)
+    return render(request, 'musicapp/artist_list.html',{'page_obj':page_obj,'page_range':page_range})# 请求页，模板，以及传给模板的数据
 
-def artist_detail(request,artistid):
+def artist_detail(request,artist_id):
     artist_at_id = None
     for artist in artists:
-        if(artist['artist_id']==artistid):
+        if(artist['artist_id']==artist_id):
             artist_at_id = artist
             break
 
     songs_by_artist = []
     for song in songs:
-        if song['artist_id']==artistid:
+        if song['artist_id']==artist_id:
             songs_by_artist.append(song)
     return render(request, 'musicapp/artist_detail.html',{
         'artist':artist_at_id,
@@ -55,17 +98,22 @@ playlist_song = {}
 for song in songs_raw:
     source = song.get('source','未知歌单')
     if source not in playlist_song:
-        playlist_song[source]=[]
+        playlist_song[source] = []
     playlist_song[source].append(song)
 
 def playlist_list(request):
-    
     return render(request, 'musicapp/playlist_list.html',{'playlist':playlist_song})
 
-
-
 def playlist_detail(request,source):
-    return render(request, 'musicapp/playlist_detail.html',{'playlist_source':playlist_song[source],'source':source})
+    paginator = Paginator(playlist_song[source],15)
+    page_number = request.GET.get('page',1)
+    page_obj = paginator.get_page(page_number)
+    current = page_obj.number
+    total = page_obj.paginator.num_pages
+    start = max(current - 3, 1)
+    end = min(current + 3, total)
+    page_range = range(start, end + 1)
+    return render(request, 'musicapp/playlist_detail.html',{'source':source,'page_range':page_range,'page_obj':page_obj})
 
 
 def search(request):
@@ -85,19 +133,23 @@ def search(request):
             'elapsed':elapsed,
             'message':'请输入内容'})
     if search_type == 'song':
-        for song in songs:
-            if keyword in str(song['name']) or keyword in str(song['artist_name']) or keyword in str(song['lyrics']):
-                results_list.append(song)
+        song_ids = inverted_index.get(keyword,set())
+        results_list = [song for song in songs if song['id'] in song_ids]
     if search_type == 'artist':
-        for artist in artists:
-            if keyword in str(artist['artist_name']) or keyword in str(artist['artist_intro']):
-                results_list.append(artist)
+        artist_ids = artist_inverted_index.get(keyword, set())
+        results_list = [artist for artist in artists if artist['artist_id'] in artist_ids]
     elapsed = round((time.time()-start_time)*1000 , 2)
-    paginator = Paginator(results_list, 10)
+    paginator = Paginator(results_list, 12)
     page_number = request.GET.get('page',1) # request.GET 相当于一个字典，里面存了URL？后面的键值对
     page_obj = paginator.get_page(page_number)
+    current = page_obj.number
+    total = page_obj.paginator.num_pages
+    start = max(current - 3, 1)
+    end = min(current + 3, total)
+    page_range = range(start, end + 1)
     return render(request, 'musicapp/search_results.html',{
         'page_obj':page_obj,
+        'page_range':page_range,
         'keyword':keyword,
         'search_type':search_type,
         'count':len(results_list),

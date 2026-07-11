@@ -1,0 +1,26 @@
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 高赞组数据
+categories = ['情感共鸣', '幽默调侃', '哲理文化', '粉丝支持', '科普信息', '其他']
+high_like = [48, 21, 16, 11, 3, 1]
+random_like = [37, 31, 9, 12, 7, 4]
+
+# 颜色
+colors = ['#FF6B6B', '#4ECDC4', '#A66CFF', '#FFA94D', '#45B7D1', '#95A5A6']
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# 高赞组饼图
+axes[0].pie(high_like, labels=categories, autopct='%1.1f%%', colors=colors, startangle=90)
+axes[0].set_title('高赞组评论类型分布', fontsize=14)
+
+# 随机组饼图
+axes[1].pie(random_like, labels=categories, autopct='%1.1f%%', colors=colors, startangle=90)
+axes[1].set_title('随机组评论类型分布', fontsize=14)
+
+plt.tight_layout()
+plt.savefig('C:/Users/53125/Desktop/music_project/analysis/comment_type_pie.png', dpi=300, bbox_inches='tight')
+plt.show()

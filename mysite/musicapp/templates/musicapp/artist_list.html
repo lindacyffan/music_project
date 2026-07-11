@@ -1,81 +1,85 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>歌单列表</title>
-</head>
-<body>
-    <form action="/search/" method="get">
-    <input type="text" name="q" placeholder="输入关键词" required>
-    <select name="type">
-        <option value="song">歌曲</option>
-        <option value="artist">歌手</option>
-    </select>
-    <button type="submit">搜索</button>
-</form> 
-    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a>| <a href="/playlists">歌单列表</a>
+{% extends "musicapp/base.html" %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>歌手名</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for artist in page_obj.object_list %}
-            <tr>
-                <td><a href="/artists/{{artist.artist_id}}">{{ artist.artist_name }}</a></td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="1">暂无数据</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-    <div>
+{% block title %}歌手列表{% endblock %}
+
+{% block content %}
+<h1>歌手列表</h1>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>歌手名</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for artist in page_obj.object_list %}
+        <tr>
+            <td><a href="/artists/{{ artist.artist_id }}/">{{ artist.artist_name }}</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="1" class="text-center">暂无数据</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 分页控件 -->
+<nav>
+    <ul class="pagination justify-content-center">
         {% if page_obj.has_previous %}
-            <a href="?page={{page_obj.previous_page_number}}">上一页</a>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">上一页</a>
+        </li>
         {% else %}
-            <span>上一页</span>
-        {% endif %}    
+        <li class="page-item disabled">
+            <span class="page-link">上一页</span>
+        </li>
+        {% endif %}
 
-        {% for num in page_obj.paginator.page_range %}
-            {% if num == page_obj.number%}
-                <span>{{num}}</span>
-            {% else%}
-                <a href="?page={{num}}">{{num}}</a>
+        {% for num in page_range %}
+            {% if num == page_obj.number %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
-            <a href="?page={{page_obj.next_page_number}}">下一页</a>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">下一页</a>
+        </li>
         {% else %}
-            <span>下一页</span>
-        {% endif %}   
+        <li class="page-item disabled">
+            <span class="page-link">下一页</span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 
-        <span>
-            跳转到
-            <input type="number" id="page-input" min="1" max="{{page_obj.paginator.num_pages}}" placeholder="页码">
-            <button onclick="goToPage()">跳转</button>
-        </span>
-    </div>
+<!-- 页码跳转 -->
+<div class="text-center mt-3">
+    <span>跳转到</span>
+    <input type="number" id="page-input" class="form-control d-inline-block" style="width: 80px; display: inline-block;" min="1" max="{{ page_obj.paginator.num_pages }}" placeholder="页码">
+    <button class="btn btn-primary btn-sm" onclick="goToPage()">跳转</button>
+</div>
 
-    <script>
-        function goToPage(){
-            var input= document.getElementById('page-input');
-            var page= input.value.trim();
-            if(page){
-                window.location.href='?page=' + page;
-            }
-        }
-        document.getElementById('page-input').addEventListener('keypress',function(e){
-            if(e.key == 'Enter'){
-                goToPage();
-            }
-        });
-    </script>
-    <p></p>
-</body>
-</html>
+<script>
+function goToPage() {
+    var input = document.getElementById('page-input');
+    var page = input.value.trim();
+    if (page) {
+        window.location.href = '?page=' + page;
+    }
+}
+document.getElementById('page-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        goToPage();
+    }
+});
+</script>
+{% endblock %}

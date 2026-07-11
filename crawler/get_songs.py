@@ -23,38 +23,33 @@ playlist_map = {
     "17535769386":"80后歌单",
     "7810805656":"影视原声",
     "8835188200":"欧美热播",
-    # 你可以继续添加更多榜单
 }
 cookies = {
  "os": "pc"
 }
 playlist_id = "8835188200"
+playlist_name = playlist_map.get(playlist_id, playlist_id)
 url = f"https://music.163.com/api/playlist/detail?id={playlist_id}"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/116.0",
     "Referer": "https://music.163.com/"
 }
-
 response = requests.get(url=url,headers=headers,cookies=cookies)
-
-
-
 data = response.json()
-playlist_name = playlist_map.get(playlist_id, playlist_id)
+
 filename = f'data/raw_data_{playlist_name}.csv'
 file = open(f'{filename}','w',newline='',encoding='utf-8-sig')
-
 writer = csv.writer(file)
 writer.writerow(['name', 'id', 'artist_id','artist_name', 'album_picUrl', 'music_Url'])
+
 tracks = data['result']['tracks']
 for song in tracks:
     name=song['name']
     id=song['id']
     artist_id = song['artists'][0]['id']
-    artist_name=song['artists'][0]['name']
-    album_picUrl=song['album']['picUrl']
-    music_Url=f"https://music.163.com/#/song?id={id}"
-
+    artist_name = song['artists'][0]['name']
+    album_picUrl = song['album']['picUrl']
+    music_Url = f"https://music.163.com/#/song?id={id}"
     row = [name,id,artist_id,artist_name,album_picUrl,music_Url]
     writer.writerow(row)
 

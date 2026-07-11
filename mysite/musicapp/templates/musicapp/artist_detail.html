@@ -1,48 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>歌手详情</title>
-</head>
-<body>
-    <form action="/search/" method="get">
-    <input type="text" name="q" placeholder="输入关键词" required>
-    <select name="type">
-        <option value="song">歌曲</option>
-        <option value="artist">歌手</option>
-    </select>
-    <button type="submit">搜索</button>
-    </form> 
-    <a href="/">歌曲列表</a> | <a href="/artists/">歌手列表</a> | <a href="/playlists">歌单列表</a>
-    <h1>歌手详情</h1>
-    <div style="display: flex; align-items: flex-start;">
-        <div>
-            {%if artist.artist_pic %}
-                <img src="{{artist.artist_pic}}" width="150">
-            {% else %}
-                <img src="/static/default_cover.jpg">
-            {% endif %}
-        </div>
-        <div style="margin-left: 20px;">
-            <h1>{{artist.name}}</h1>
-            <p>歌手：{{artist.artist_name}}</p>
-            <a href="{{artist.artist_url}}">查看原始网站</a>
-        </div>
+{% extends "musicapp/base.html" %}
+
+{% block title %}{{ artist.artist_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 text-center">
+        {% if artist.artist_pic %}
+        <img src="{{ artist.artist_pic }}" class="img-fluid rounded shadow" style="max-width: 200px; max-height: 200px;" alt="{{ artist.artist_name }}">
+        {% else %}
+        <img src="/static/default_cover.jpg" class="img-fluid rounded shadow" style="max-width: 200px; max-height: 200px;" alt="默认头像">
+        {% endif %}
     </div>
-    <h2>简介</h2>
-    {% if artist.artist_intro %}
-        <pre>{{artist.artist_intro}}</pre>
-    {% else %}
-        <p>歌手暂无简介</p>
-    {% endif %}
-    <h2>{{artist.artist_name}}的歌曲</h2>
-    <ul>
+    <div class="col-md-8">
+        <h1>{{ artist.artist_name }}</h1>
+        <p><strong>歌手：</strong>{{ artist.artist_name }}</p>
+        <a href="{{ artist.artist_url }}" class="btn btn-outline-primary" target="_blank">查看原始网站</a>
+    </div>
+</div>
+
+<hr>
+
+<h2>简介</h2>
+{% if artist.artist_intro %}
+<pre class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ artist.artist_intro }}</pre>
+{% else %}
+<p class="text-muted">歌手暂无简介</p>
+{% endif %}
+
+<hr>
+
+<h2>{{ artist.artist_name }}的歌曲</h2>
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>歌曲名</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for song in songs %}
-            <li><a href="/song/{{song.id}}">{{song.name}}</a></li>
+        <tr>
+            <td><a href="/song/{{ song.id }}/">{{ song.name }}</a></td>
+        </tr>
         {% empty %}
-            <li>该歌手暂无歌曲</li>
+        <tr>
+            <td class="text-center">该歌手暂无歌曲</td>
+        </tr>
         {% endfor %}
-    </ul>
-    
-</body>
-</html>
+    </tbody>
+</table>
+{% endblock %}
