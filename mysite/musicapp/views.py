@@ -134,10 +134,18 @@ def search(request):
             'message':'请输入内容'})
     if search_type == 'song':
         song_ids = inverted_index.get(keyword,set())
-        results_list = [song for song in songs if song['id'] in song_ids]
+        if song_ids:
+            results_list = [song for song in songs if song['id'] in song_ids]
+        else:
+            for song in songs:
+                if keyword in str(song.get('name', '')) or keyword in str(song.get('artist_name', '')) or keyword in str(song.get('lyrics', '')):
+                    results_list.append(song)    
     if search_type == 'artist':
-        artist_ids = artist_inverted_index.get(keyword, set())
-        results_list = [artist for artist in artists if artist['artist_id'] in artist_ids]
+        results_list = []
+        for artist in artists:
+            if (keyword in str(artist.get('artist_name', '')) or 
+                keyword in str(artist.get('artist_intro', ''))):
+                results_list.append(artist)
     elapsed = round((time.time()-start_time)*1000 , 2)
     paginator = Paginator(results_list, 12)
     page_number = request.GET.get('page',1) # request.GET 相当于一个字典，里面存了URL？后面的键值对

@@ -30,6 +30,7 @@
     
     <nav>
         <ul class="pagination justify-content-center">
+        <a href="?page=1" class="page-link">首页</a>
         {% if page_obj.has_previous %}
         <li class="page-item">
             <a class="page-link"href="?page={{page_obj.previous_page_number}}">上一页</a>
@@ -59,7 +60,8 @@
         {% else %}
         <li class = "page-item disabled">
             <span class="page-link">下一页</span></li>
-        {% endif %}   
+        {% endif %}  
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">尾页</a> 
         </ul>
     </nav>
         <div class="text-center mt-3">
