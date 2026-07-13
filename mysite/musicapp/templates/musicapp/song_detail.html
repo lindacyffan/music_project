@@ -33,21 +33,21 @@
         <div class="comment-list">
             {% for comment in comments|dictsortreversed:"时间" %}
             <div class="comment-item">
-                <div class="comment-user">
-                    <span class="avatar">👤</span>
-                    <span class="username">匿名用户</span>
-                </div>
-                <div>
-                    <span class="likes">❤️{{comment.likes}}</span>
-                    <a href="/song/{{ song.id }}/comment/delete/{{ comment.id }}/" 
-                       class="delete-btn" 
-                       onclick="return confirm('确定删除这条评论吗？');">删除</a>  
+                <div class="comment-header">
+                    <div class="comment-user">
+                        <span class="avatar">👤</span>
+                        <span class="username">匿名用户</span>
+                    </div>
+                    <div class="comment-right">
+                        <span class="comment-time">{{ comment.时间 }}</span>
+                        <span class="comment-likes">❤️ {{ comment.likes|default:0 }}</span>
+                        <a href="/song/{{ song.id }}/comment/delete/{{ comment.id }}/" 
+                        class="comment-delete" 
+                        onclick="return confirm('确定删除这条评论吗？');">删除</a>
+                    </div>
                 </div>
                 <div class="comment-body">
-                {{ comment.内容 }}
-                </div>
-                <div class="comment-time">
-                    {{ comment.时间 }}
+                    {{ comment.内容 }}
                 </div>
             </div>
             {% endfor %}
