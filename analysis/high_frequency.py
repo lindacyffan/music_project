@@ -25,8 +25,8 @@ for row in reader:
 word_Counts = Counter(words)
 high_freq_words = [word for word,count in word_Counts.items() if count>=5]
 print(high_freq_words)
-top_5 = word_Counts.most_common(10)
-print(top_5)
+top_10 = word_Counts.most_common(10)
+print(top_10)
 file.close()
 
 wc = WordCloud(

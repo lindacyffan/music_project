@@ -27,7 +27,7 @@ playlist_map = {
 cookies = {
  "os": "pc"
 }
-playlist_id = "8835188200"
+playlist_id = "8835188200"  # 仅作举例用
 playlist_name = playlist_map.get(playlist_id, playlist_id)
 url = f"https://music.163.com/api/playlist/detail?id={playlist_id}"
 headers = {
