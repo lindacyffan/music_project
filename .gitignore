@@ -42,3 +42,9 @@ db.sqlite3
 *.jpg
 *.jpeg
 *.gif
+
+# 个人笔记文档
+bootstrap.md
+debug.md
+django阅读文档.md
+json基本操作指南.md
